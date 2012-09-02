@@ -15,9 +15,9 @@ setup(
   author="Dalton Barreto",
   author_email="daltonmatos@gmail.com",
   long_description=open(os.path.join(ROOT, 'README.rst')).read(),
-  packages=['m2tool', 'm2tool/dj', 'm2tool/dj/m2tool'],
+  packages=['m2tool'],
   scripts=['scripts/m2tool'],
-#  install_requires = ['plugnplay', 'pyzmq', 'python-daemon', 'simplejson', 'argparse'],
+  install_requires = ['python-modargs'],
   classifiers = [
     "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
