@@ -1,3 +1,18 @@
+from modargs import args
+import sys
+import m2tool.commands
+
 
 def main():
-    print "m2tool"
+    command, params = args.parse(sys.argv[1:])
+    all_commands = args.available_commands(m2tool.commands)
+
+    if command not in all_commands:
+        print "Command {0} not found!".format(command)
+
+    else:
+        print "Running {0}".format(command)
+        f = args.function_for(m2tool.commands, command)
+        f()
+
+    sys.exit(0)
