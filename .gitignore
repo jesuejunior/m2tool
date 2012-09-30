@@ -21,4 +21,6 @@ pip-log.txt
 .tox
 
 m2tool.egg-info/
+dist/
+build/
 
