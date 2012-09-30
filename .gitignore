@@ -1,7 +1,7 @@
 *.py[co]
 
 *.swp
-
+.idea/
 # Packages
 *.egg
 *.egg-info

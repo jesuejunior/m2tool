@@ -16,7 +16,11 @@ setup(
   author_email="daltonmatos@gmail.com",
   long_description=open(os.path.join(ROOT, 'README.rst')).read(),
   packages=['m2tool'],
-  scripts=['scripts/m2tool'],
+    entry_points={
+        'console_scripts': [
+            'm2tool = m2tool.main:main',
+            ]
+    },
   install_requires = ['python-modargs'],
   classifiers = [
     "License :: OSI Approved :: BSD License",
