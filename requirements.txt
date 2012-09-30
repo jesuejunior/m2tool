@@ -1,0 +1,7 @@
+Alchemytools==0.2
+SQLAlchemy==0.7.8
+-e git+git@github.com:jesuejunior/m2tool.git@0a0b08bd3dd722c9d8043e0ac7d0f82ee52b7563#egg=m2tool-dev
+mock==1.0b1
+nose==1.2.1
+python-modargs==1.4
+wsgiref==0.1.2
