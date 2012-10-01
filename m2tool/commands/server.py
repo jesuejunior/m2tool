@@ -1,4 +1,6 @@
+#coding: utf-8
 from uuid import uuid4
+import sys
 from m2tool.db import Session
 from m2tool.db.models import Server
 
@@ -34,10 +36,16 @@ def server_command(name, port, chroot=None, bindaddr=None, pidfile=None,
     else:
         usessl = ssl
 
-
     session = Session()
-    server = Server(name=name, port=port, chroot=chroot,  bind_addr=bindaddr, pid_File=pidfile,
-        default_host=defaulthost, access_log=accesslog, error_log=errorlog, use_ssl=usessl, uuid=uuid )
 
-    session.add(server)
-    session.commit()
+    port_verify = session.query(Server).filter_by(port=port).count()
+
+    if port_verify :
+        print 'Porta {0} já está em uso, por favor tente outra'.format(port)
+
+    else:
+        server = Server(name=name, port=port, chroot=chroot,  bind_addr=bindaddr, pid_File=pidfile,
+            default_host=defaulthost, access_log=accesslog, error_log=errorlog, use_ssl=usessl, uuid=uuid )
+
+        session.add(server)
+        session.commit()

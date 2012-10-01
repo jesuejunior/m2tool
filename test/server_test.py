@@ -16,9 +16,24 @@ class ServerCommandTest(unittest.TestCase):
         session = Session()
         self.assertEquals(0, len(session.query(Server).all()))
 
-        server_command('localhost', 80)
+        server_command('localhost', 80, '/var/m2')
 
         servers = session.query(Server).all()
         self.assertEquals(1, len(servers))
         self.assertEquals('localhost', servers[0].name)
         self.assertEquals(80, servers[0].port)
+        self.assertEquals('/var/m2', servers[0].chroot)
+
+    def test_port_duplicate(self):
+        session = Session()
+
+        server_command('localhost', 80, '/var/m2')
+        server = session.query(Server).filter_by(port=80).all()
+        self.assertEquals(1, len(server))
+
+        server_command('localhost', 80, '/var/m2')
+        server2 = session.query(Server).filter_by(port=80).all()
+        self.assertEquals(1, len(server2))
+
+
+
