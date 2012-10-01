@@ -1,4 +1,3 @@
-
 import os
 
 DIRNAME = '.m2tool'
