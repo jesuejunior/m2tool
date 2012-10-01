@@ -10,3 +10,4 @@ engine = create_engine("sqlite+pysqlite:///{0}".format(os.environ.get(M2_DB_ENV,
 Metadata = MetaData(bind=engine)
 Model = declarative_base(metadata=Metadata)
 Session = sessionmaker(bind=engine)
+

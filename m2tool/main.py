@@ -1,7 +1,6 @@
 from modargs import args
 import sys
 import os
-
 import m2tool.commands
 from m2tool.conf import M2_DB_ENV, M2_DEFAULT_DB_PATH
 
