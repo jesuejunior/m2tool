@@ -39,9 +39,12 @@ def server_command(name, port, chroot=None, bindaddr=None, pidfile=None,
     session = Session()
 
     port_verify = session.query(Server).filter_by(port=port).count()
+    uuid_verify = session.query(Server).filter_by(uuid=uuid).count()
 
     if port_verify :
-        print 'Porta {0} já está em uso, por favor tente outra'.format(port)
+        print 'Porta [{0}] já está em uso, por favor tente outra'.format(port)
+    elif uuid_verify:
+        print 'UUID [{0}] já existe, por favor verifique'.format(uuid)
 
     else:
         server = Server(name=name, port=port, chroot=chroot,  bind_addr=bindaddr, pid_File=pidfile,
