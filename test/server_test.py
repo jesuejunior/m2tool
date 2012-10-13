@@ -4,7 +4,7 @@ import unittest
 
 from m2tool.db import Metadata, Session
 from m2tool.db.models import Server
-from m2tool.commands.server import server_command
+from m2tool.commands.server import add, server_run
 
 class ServerCommandTest(unittest.TestCase):
 
@@ -16,7 +16,7 @@ class ServerCommandTest(unittest.TestCase):
         session = Session()
         self.assertEquals(0, len(session.query(Server).all()))
 
-        server_command('add','localhost-full', 80, '/var/m2', '0.0.0.0', '/run/pid.1', 'jj.com', '/logs/access.log',
+        add('localhost-full', 80, '/var/m2', '0.0.0.0', '/run/pid.1', 'jj.com', '/logs/access.log',
             '/logs/error.log', True, '12e4-abcd-5678-efgh')
 
         servers = session.query(Server).all()
@@ -35,32 +35,32 @@ class ServerCommandTest(unittest.TestCase):
     def test_port_duplicate(self):
         session = Session()
 
-        server_command('add','localhost', 80, '/var/m2')
+        add('localhost', 80, '/var/m2')
         server_port = session.query(Server).filter_by(port=80).all()
         self.assertEquals(1, len(server_port))
 
-        server_command('add','localhost', 80, '/var/m2')
+        add('localhost', 80, '/var/m2')
         server2_port = session.query(Server).filter_by(port=80).all()
         self.assertEquals(1, len(server2_port))
 
     def test_uuid_duplicate(self):
         session = Session()
 
-        server_command('add','localhost', 81, '/var/m2', uuid='1234-abcd-5678-efgh')
+        add('localhost', 81, '/var/m2', uuid='1234-abcd-5678-efgh')
         server_uuid = session.query(Server).filter_by(uuid='1234-abcd-5678-efgh').all()
         self.assertEquals(1, len(server_uuid))
 
-        server_command('add','localhost2', 80, '/var/m2', uuid='1234-abcd-5678-efgh')
+        add('localhost2', 80, '/var/m2', uuid='1234-abcd-5678-efgh')
         server2_uuid = session.query(Server).filter_by(uuid='1234-abcd-5678-efgh').all()
         self.assertEquals(1, len(server2_uuid))
 
     def test_remove_server(self):
         session = Session()
-        server_command('add','teste-remove', 80, '/var/m2', uuid='1234-abcd-5678-efgh')
+        add('teste-remove', 80, '/var/m2', uuid='1234-abcd-5678-efgh')
         server_remove = session.query(Server).filter_by(uuid='1234-abcd-5678-efgh').all()
         self.assertEquals(1, len(server_remove))
 
-        server_command('remove', id=server_remove[0].id)
+        server_run('remove', id=server_remove[0].id)
 
         server2_rem = session.query(Server).filter_by(uuid='1234-abcd-5678-efgh').all()
         self.assertEquals(0, len(server2_rem))
@@ -68,7 +68,7 @@ class ServerCommandTest(unittest.TestCase):
     def test_remove_server_none(self):
         session = Session()
         server2_qtd = session.query(Server).all()
-        server_command('remove', id=200)
+        server_run('remove', id=200)
         server2_none = session.query(Server).all()
         self.assertEquals(len(server2_qtd), len(server2_none))
 

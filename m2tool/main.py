@@ -15,16 +15,11 @@ def main():
 
     print "Using DB {0}".format(os.environ.get(M2_DB_ENV))
 
-    print params
-    print command
-    print option
     if command not in all_commands:
         print "Command {0} not found!".format(command)
 
     else:
-        #print func
-        print "Running {0}".format(command)
         f = args.function_for(m2tool.commands, command)
-        f(option,**params)
+        f(sys.argv[2:])
 
     sys.exit(0)
