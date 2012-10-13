@@ -50,35 +50,8 @@ def add(name=None, port=None, chroot="/var/mongrel2", bindaddr="0.0.0.0", pidfil
     print 'Congratulations! Server [{0}] adding with success.'.format(name)
 
 
-def server_run(option, name=None, port=None, chroot=None, bindaddr=None, pidfile=None,
-               defaulthost=None, accesslog=None, errorlog=None, ssl=False, uuid=None, id=None):
-    if not uuid:
-        uuid = str(uuid4())
-
-    if not chroot:
-        chroot = '/var/mongrel2'
-
-    if not bindaddr:
-    #Accept connection from any host
-        bindaddr = '0.0.0.0'
-
-    if not pidfile:
-        pidfile = "/run/mongrel2.pid"
-
-    if not accesslog:
-        accesslog = '/logs/access.log'
-
-    if not errorlog:
-        errorlog = '/logs/error.log'
-
-    if ssl is True:
-        usessl = True
-    else:
-        usessl = ssl
-
-    session = Session()
-
-    if option == 'remove':
+def remove(id):
+    with managed(Session) as session:
         server = session.query(Server).get(id)
         if server:
             session.query(Server).filter_by(id=id).delete()
@@ -86,12 +59,3 @@ def server_run(option, name=None, port=None, chroot=None, bindaddr=None, pidfile
             print 'Server [{0}] was removed with success.'.format(server.name)
         else:
             print 'Server not found.'
-    elif option == 'update':
-        print 'up'
-    elif option == 'list':
-        server = session.query(Server).order_by(Server.id).all()
-        print  '| ' + 'id' + '  |  ' + 'Name' + '  |  ' + 'Port' + ' | '
-        for servers in server:
-            print servers.id , servers.name, servers.port
-    else:
-        print 'Any option selected.'

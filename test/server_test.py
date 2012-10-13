@@ -4,7 +4,7 @@ import unittest
 
 from m2tool.db import Metadata, Session
 from m2tool.db.models import Server
-from m2tool.commands.server import add, server_run
+from m2tool.commands.server import add, remove
 
 class ServerCommandTest(unittest.TestCase):
 
@@ -60,7 +60,7 @@ class ServerCommandTest(unittest.TestCase):
         server_remove = session.query(Server).filter_by(uuid='1234-abcd-5678-efgh').all()
         self.assertEquals(1, len(server_remove))
 
-        server_run('remove', id=server_remove[0].id)
+        remove(id=server_remove[0].id)
 
         server2_rem = session.query(Server).filter_by(uuid='1234-abcd-5678-efgh').all()
         self.assertEquals(0, len(server2_rem))
@@ -68,7 +68,7 @@ class ServerCommandTest(unittest.TestCase):
     def test_remove_server_none(self):
         session = Session()
         server2_qtd = session.query(Server).all()
-        server_run('remove', id=200)
+        remove(id=200)
         server2_none = session.query(Server).all()
         self.assertEquals(len(server2_qtd), len(server2_none))
 
