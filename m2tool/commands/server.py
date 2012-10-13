@@ -1,17 +1,21 @@
 #coding: utf-8
+from sys import argv
 from uuid import uuid4
 import sys
 from m2tool.db import Session
 from m2tool.db.models import Server
 
-def server_command(name, port, chroot=None, bindaddr=None, pidfile=None,
-                   defaulthost=None, accesslog=None, errorlog=None, ssl=False,uuid=None ):
+def server_command(function,name, port, chroot=None, bindaddr=None, pidfile=None,
+                   defaulthost=None, accesslog=None, errorlog=None, ssl=False,uuid=None):
     '''
     --uuid=UUID --accesslog=FILE --errorlog=FILE
     --chroot=PATH --pidfile=FILE --name=NAME
     --bindaddr=IP --port=PORT --ssl
     --defaulthost=HOSTNAME
     '''
+
+    print function
+
     if not uuid:
         uuid = str(uuid4())
 
