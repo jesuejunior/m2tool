@@ -20,6 +20,8 @@ pip-log.txt
 .coverage
 .tox
 
+
+config.sqlite
 m2tool.egg-info/
 dist/
 build/
