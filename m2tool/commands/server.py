@@ -1,9 +1,12 @@
 #coding: utf-8
 from uuid import uuid4
-from m2tool.db import Session
-from m2tool.db.models import Server
 from modargs import args
 from alchemytools.context import managed
+from clint.textui import columns, puts
+
+from m2tool.db import Session
+from m2tool.db.models import Server
+
 
 def server_command(arglist):
     '''
@@ -41,6 +44,7 @@ def add(name=None, port=None, chroot="/var/mongrel2", bindaddr="0.0.0.0", pidfil
 
         if not port or not name:
             print "Please verify parameters --port or --name"
+            return False
         else:
             server = Server(name=name, port=port, chroot=chroot,  bind_addr=bindaddr, pid_File=pidfile,
                 default_host=defaulthost, access_log=accesslog, error_log=errorlog, use_ssl=ssl, uuid=uuid )
@@ -59,3 +63,13 @@ def remove(id):
             print 'Server [{0}] was removed with success.'.format(server.name)
         else:
             print 'Server not found.'
+
+def list():
+    with managed(Session) as session:
+        servers = session.query(Server).all()
+        if servers:
+            puts(columns(['Name', 32], ['Port', 5], ['Uuid', 32]))
+
+        for server in servers:
+            puts(columns([server.name, 32], [str(server.port), 5], [server.uuid, 32]))
+
