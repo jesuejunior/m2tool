@@ -16,7 +16,7 @@ class ServerCommandTest(unittest.TestCase):
         session = Session()
         self.assertEquals(0, len(session.query(Server).all()))
 
-        server_command('localhost', 80, '/var/m2')
+        server_command('add','localhost', 80, '/var/m2')
 
         servers = session.query(Server).all()
         self.assertEquals(1, len(servers))
@@ -27,22 +27,22 @@ class ServerCommandTest(unittest.TestCase):
     def test_port_duplicate(self):
         session = Session()
 
-        server_command('localhost', 80, '/var/m2')
+        server_command('add','localhost', 80, '/var/m2')
         server = session.query(Server).filter_by(port=80).all()
         self.assertEquals(1, len(server))
 
-        server_command('localhost', 80, '/var/m2')
+        server_command('add','localhost', 80, '/var/m2')
         server2 = session.query(Server).filter_by(port=80).all()
         self.assertEquals(1, len(server2))
 
     def test_uuid_duplicate(self):
         session = Session()
 
-        server_command('localhost', 81, '/var/m2', uuid='1234-abcd-5678-efgh')
+        server_command('add','localhost', 81, '/var/m2', uuid='1234-abcd-5678-efgh')
         server = session.query(Server).filter_by(uuid='1234-abcd-5678-efgh').all()
         self.assertEquals(1, len(server))
 
-        server_command('localhost', 80, '/var/m2', uuid='1234-abcd-5678-efgh')
+        server_command('add','localhost2', 80, '/var/m2', uuid='1234-abcd-5678-efgh')
         server2 = session.query(Server).filter_by(uuid='1234-abcd-5678-efgh').all()
         self.assertEquals(1, len(server2))
 
