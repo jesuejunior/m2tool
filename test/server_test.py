@@ -3,7 +3,7 @@
 import unittest
 
 from m2tool.db import Metadata, Session
-from m2tool.db.models import Server
+from m2tool.db.server import Server
 from m2tool.commands.server import add, remove
 
 class ServerCommandTest(unittest.TestCase):

@@ -5,7 +5,7 @@ from alchemytools.context import managed
 from clint.textui import columns, puts
 
 from m2tool.db import Session
-from m2tool.db.models import Server
+from m2tool.db.server import Server
 
 
 def server_command(arglist):
