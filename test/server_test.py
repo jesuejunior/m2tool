@@ -1,5 +1,4 @@
 #encoding: utf-8
-
 import unittest
 
 from m2tool.db import Metadata, Session
