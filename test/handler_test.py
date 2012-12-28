@@ -15,7 +15,7 @@ class HandlerCommandTest(unittest.TestCase):
         session = Session()
         self.assertEquals(0, len(session.query(Handler).all()))
 
-        add('12e4-abcd-5678-efgh', '12e4-abcd-5678-aaaa', 'tcp://127.0.0.1:5000', 'tcp://127.0.0.1:5001', 0, 'json')
+        add('12e4-abcd-5678-efgh', 'tcp://127.0.0.1:5000', '12e4-abcd-5678-aaaa', 'tcp://127.0.0.1:5001', 0, 'json')
 
         handlers = session.query(Handler).all()
         self.assertEquals(1, len(handlers))
@@ -47,3 +47,7 @@ class HandlerCommandTest(unittest.TestCase):
         add('12e4-abcd-5678-efgh', 'tcp://127.0.0.1:5002', '12e4-abcd-5678-aaa7', 'tcp://127.0.0.1:5003')
         recvident2 = session.query(Handler).filter_by(recv_ident='12e4-abcd-5678-aaa7').all()
         self.assertEquals(1, len(recvident2))
+
+    def tearDown(self):
+        Metadata.drop_all()
+        Metadata.create_all()
