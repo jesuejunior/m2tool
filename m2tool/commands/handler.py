@@ -24,12 +24,28 @@ def handler_command(arglist):
 def add(sendident=None, sendspec=None, recvident=None,  recvspec=None, rawpayload=0, protocol='json'):
     print "Adding Handler: SEND_SPEC={0},SEND_IDENT={1}, RECV_SPEC={2}, RECV_IDENT={3}".format(sendspec, sendident, recvspec, recvident)
 
+    if not sendspec or not recvspec:
+        print "Please verify parameters --sendspec or --recvspec"
+        return False
+
     if not sendident:
         sendident = str(uuid4())
     if not recvident:
         recvident = str(uuid4())
     with managed(Session) as session:
 
+        #verify if exist send_spec and recv_spec
+        sendspec_exist = session.query(Handler).filter_by(send_spec=sendspec).count()
+        recvspec_exist = session.query(Handler).filter_by(recv_spec=recvspec).count()
+
+        if sendspec_exist:
+            print 'SEND_SPEC [{0}] already exists, please check and try another port.'.format(sendspec)
+            return False
+        if recvspec_exist:
+            print 'RECV_SPEC [{0}] already exists, please check and try another port.'.format(recvspec)
+            return False
+
+        #verify identity of send and recv
         sendident_verify = session.query(Handler).filter_by(send_ident=sendident).count()
         recvident_verify = session.query(Handler).filter_by(recv_ident=recvident).count()
 

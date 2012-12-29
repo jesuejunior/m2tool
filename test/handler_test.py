@@ -48,6 +48,37 @@ class HandlerCommandTest(unittest.TestCase):
         recvident2 = session.query(Handler).filter_by(recv_ident='12e4-abcd-5678-aaa7').all()
         self.assertEquals(1, len(recvident2))
 
+    def test_recvspec_duplicate_or_null(self):
+        session = Session()
+
+        add('12e4-abcd-5678-efg2', 'tcp://127.0.0.1:5000', '12e4-abcd-5678-aaa7', 'tcp://127.0.0.1:5001')
+        recvspec1 = session.query(Handler).filter_by(recv_spec='tcp://127.0.0.1:5001').all()
+        self.assertEquals(1, len(recvspec1))
+
+        add('12e4-abcd-5678-efgh', 'tcp://127.0.0.1:5002', '12e4-abcd-5678-aaa7', 'tcp://127.0.0.1:5001')
+        recvspec2 = session.query(Handler).filter_by(recv_spec='tcp://127.0.0.1:5001').all()
+        self.assertEquals(1, len(recvspec2))
+
+        add('12e4-abcd-5678-efgh', 'tcp://127.0.0.1:5002', '12e4-abcd-5678-aaa7', None)
+        handler = session.query(Handler).all()
+        self.assertEquals(1, len(handler))
+
+    def test_sendspec_duplicate_or_null(self):
+        session = Session()
+
+        add('12e4-abcd-5678-efg2', 'tcp://127.0.0.1:5000', '12e4-abcd-5678-aaa7', 'tcp://127.0.0.1:5001')
+        sendspec1 = session.query(Handler).filter_by(send_spec='tcp://127.0.0.1:5000').all()
+        self.assertEquals(1, len(sendspec1))
+
+        add('12e4-abcd-5678-efgh', 'tcp://127.0.0.1:5000', '12e4-abcd-5678-aaa7', 'tcp://127.0.0.1:5001')
+        sendspec2 = session.query(Handler).filter_by(send_spec='tcp://127.0.0.1:5000').all()
+        self.assertEquals(1, len(sendspec2))
+
+        add('12e4-abcd-5678-efgh', None, '12e4-abcd-5678-aaa7', 'tcp://127.0.0.1:5001')
+        handler = session.query(Handler).all()
+        self.assertEquals(1, len(handler))
+
+
     def tearDown(self):
         Metadata.drop_all()
         Metadata.create_all()
