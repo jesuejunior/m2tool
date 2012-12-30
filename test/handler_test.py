@@ -78,6 +78,16 @@ class HandlerCommandTest(unittest.TestCase):
         handler = session.query(Handler).all()
         self.assertEquals(1, len(handler))
 
+    def test_remove_handler(self):
+        session = Session()
+        add('12e4-abcd-5678-efg2', 'tcp://127.0.0.1:5000', '12e4-abcd-5678-aaa7', 'tcp://127.0.0.1:5001')
+        handler = session.query(Handler).filter_by(send_ident='12e4-abcd-5678-efg2').all()
+        self.assertEquals(1, len(handler))
+
+        remove(id=handler[0].id)
+        handler_rem = session.query(Handler).filter_by(send_ident='12e4-abcd-5678-efg2').all()
+        self.assertEquals(0, len(handler_rem))
+
 
     def tearDown(self):
         Metadata.drop_all()

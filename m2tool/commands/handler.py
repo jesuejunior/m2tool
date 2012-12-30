@@ -1,5 +1,6 @@
 #coding: utf-8
 from uuid import uuid4
+from clint.textui import columns, puts
 from modargs import args
 from alchemytools.context import managed
 
@@ -60,5 +61,23 @@ def add(sendident=None, sendspec=None, recvident=None,  recvspec=None, rawpayloa
                 raw_payload=rawpayload, protocol=protocol)
         session.add(handler)
 
-def remove():
-    return None
+def remove(id):
+    with managed(Session) as session:
+        handler = session.query(Handler).get(id)
+        if handler:
+            session.query(Handler).filter_by(id=id).delete()
+            session.commit()
+            print 'Handler ID [{0}] was removed with success.'.format(handler.id)
+        else:
+            print 'Handler not found.'
+
+def list():
+    with managed(Session) as session:
+        handlers = session.query(Handler).all()
+        if handlers:
+            puts(columns(['ID', 4], ['SEND_SPEC', 26], ["SEND_IDENT", 38], ['RECV_SPEC', 26], ["RECV_IDENT", 38],
+                ['raw_payload', 12], ['Protocol', 10]))
+
+        for handler in handlers:
+            puts(columns([str(handler.id), 4], [handler.send_spec, 26], [handler.send_ident, 38], [handler.recv_spec, 26],
+                [handler.send_ident, 38], [str(handler.raw_payload), 12], [handler.protocol, 8]))
