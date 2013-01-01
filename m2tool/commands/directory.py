@@ -22,7 +22,6 @@ def directory_command(arglist):
 
 def add(base=None, indexfile='index.html', defaultctype='text/html', cachettl=False):
     print "Adding Directory: BASE={0}, INDEX_FILE={1}".format(base, indexfile)
-    print base
 
     if not base or base == True:
         print "Please verify parameter --base"
