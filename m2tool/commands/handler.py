@@ -25,7 +25,7 @@ def handler_command(arglist):
 def add(sendident=None, sendspec=None, recvident=None,  recvspec=None, rawpayload=0, protocol='json'):
     print "Adding Handler: SEND_SPEC={0},SEND_IDENT={1}, RECV_SPEC={2}, RECV_IDENT={3}".format(sendspec, sendident, recvspec, recvident)
 
-    if not sendspec or not recvspec:
+    if not sendspec or not recvspec or recvspec == True or sendspec == True:
         print "Please verify parameters --sendspec or --recvspec"
         return False
 

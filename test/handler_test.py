@@ -78,6 +78,11 @@ class HandlerCommandTest(unittest.TestCase):
         handler = session.query(Handler).all()
         self.assertEquals(1, len(handler))
 
+        add('12e4-abcd-5678-efgh', True, '12e4-abcd-5678-aaa7', True)
+        handler = session.query(Handler).all()
+        self.assertEquals(1, len(handler))
+
+
     def test_remove_handler(self):
         session = Session()
         add('12e4-abcd-5678-efg2', 'tcp://127.0.0.1:5000', '12e4-abcd-5678-aaa7', 'tcp://127.0.0.1:5001')
