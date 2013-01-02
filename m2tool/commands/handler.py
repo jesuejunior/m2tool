@@ -25,7 +25,7 @@ def handler_command(arglist):
 def add(sendident=None, sendspec=None, recvident=None,  recvspec=None, rawpayload=0, protocol='json'):
     print "Adding Handler: SEND_SPEC={0},SEND_IDENT={1}, RECV_SPEC={2}, RECV_IDENT={3}".format(sendspec, sendident, recvspec, recvident)
 
-    if not sendspec or not recvspec or recvspec == True or sendspec == True:
+    if not isinstance(recvspec, str) or not isinstance(sendspec, str):
         print "Please verify parameters --sendspec or --recvspec"
         return False
 
@@ -60,6 +60,7 @@ def add(sendident=None, sendspec=None, recvident=None,  recvspec=None, rawpayloa
             handler = Handler(send_ident=sendident, recv_ident=recvident, send_spec=sendspec, recv_spec=recvspec,
                 raw_payload=rawpayload, protocol=protocol)
         session.add(handler)
+        print 'Congratulations! Handler SEND [{0}] and Handler RECV[{1}] adding with success.'.format(sendspec, recvspec)
 
 def remove(id):
     with managed(Session) as session:

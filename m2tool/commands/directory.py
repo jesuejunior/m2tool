@@ -23,7 +23,7 @@ def directory_command(arglist):
 def add(base=None, indexfile='index.html', defaultctype='text/html', cachettl=False):
     print "Adding Directory: BASE={0}, INDEX_FILE={1}".format(base, indexfile)
 
-    if not base or base == True:
+    if not isinstance(base, str):
         print "Please verify parameter --base"
         return False
     with managed(Session) as session:
