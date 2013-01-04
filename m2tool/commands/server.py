@@ -42,7 +42,7 @@ def add(name=None, port=None, chroot="/var/mongrel2", bindaddr="0.0.0.0", pidfil
             print 'Porta [{0}] já está em uso, por favor tente outra'.format(port)
             return False
 
-        if not port or not name:
+        if isinstance(port, bool) or not isinstance(name, str):
             print "Please verify parameters --port or --name"
             return False
         else:
@@ -68,8 +68,9 @@ def list():
     with managed(Session) as session:
         servers = session.query(Server).all()
         if servers:
-            puts(columns(['Name', 32], ['Port', 5], ['Uuid', 32]))
-
+            puts(columns(['Name', 32], ['Port', 5], ['Uuid', 35]))
+        else:
+            print "Servers not found"
         for server in servers:
-            puts(columns([server.name, 32], [str(server.port), 5], [server.uuid, 32]))
+            puts(columns([server.name, 32], [str(server.port), 5], [server.uuid, 35]))
 
