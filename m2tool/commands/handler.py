@@ -59,7 +59,7 @@ def add(sendident=None, sendspec=None, recvident=None,  recvspec=None, rawpayloa
         else:
             handler = Handler(send_ident=sendident, recv_ident=recvident, send_spec=sendspec, recv_spec=recvspec,
                 raw_payload=rawpayload, protocol=protocol)
-        session.add(handler)
+            session.add(handler)
 
 def remove(id):
     with managed(Session) as session:
