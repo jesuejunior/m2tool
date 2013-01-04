@@ -37,7 +37,7 @@ def remove(id):
     with managed(Session) as session:
         directory = session.query(Directory).get(id)
         if directory:
-            session.query(Directory).filter_by(id=id).delete()
+            session.delete(directory)
             session.commit()
             print 'Directory ID [{0}] was removed with success.'.format(directory.id)
         else:
