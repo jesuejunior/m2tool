@@ -5,25 +5,31 @@ from alchemytools.context import managed
 from clint.textui import columns, puts
 
 from m2tool.db import Session
+import sys
 from m2tool.db.server import Server
+import komandr
 
 
-def server_command(arglist):
-    '''
-    --uuid=UUID --accesslog=FILE --errorlog=FILE
-    --chroot=PATH --pidfile=FILE --name=NAME
-    --bindaddr=IP --port=PORT --ssl
-    --defaulthost=HOSTNAME
-    '''
 
-    subcommand, params = args.parse(arglist)
-
-    if subcommand in globals():
-        globals()[subcommand](**params)
-    else:
-        print "Subcommand {0} not found".format(subcommand)
+_server = komandr.prog()
 
 
+@komandr.command
+@komandr.arg('cmd', 'cmd', choices=['add', 'remove', 'update', 'list'])
+def server(cmd):
+    print "Command received:", cmd
+
+    sys.argv = sys.argv[1:]
+    _server()
+
+#    subcommand, params = args.parse(arglist)
+#
+#    if subcommand in globals():
+#        globals()[subcommand](**params)
+#    else:
+#        print "Subcommand {0} not found".format(subcommand)
+
+@_server.command()
 def add(name=None, port=None, chroot="/var/mongrel2", bindaddr="0.0.0.0", pidfile="/run/mongrel2.pid",
         defaulthost=None, accesslog='/logs/access.log', errorlog='/logs/error.log', ssl=False, uuid=None):
     print "Adding Server: name={0}, port={1}, ssl={2}".format(name, port, ssl)
