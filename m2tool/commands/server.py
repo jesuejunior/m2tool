@@ -67,11 +67,11 @@ def add(name=None, port=None, chroot=DEFAULT_CHROOT, bindaddr=DEFAULT_BIND_ADDR,
             return False
 
         port_verify = session.query(Server).filter_by(port=port).count()
-        if port_verify :
+        if port_verify:
             print 'Porta [{0}] já está em uso, por favor tente outra'.format(port)
             return False
 
-        if isinstance(port, bool) or not isinstance(name, str):
+        if not port or not name:
             print "Please verify parameters --port or --name"
             return False
         else:
