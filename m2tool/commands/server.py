@@ -14,7 +14,7 @@ _server = komandr.prog(prog='{0} server'.format(__projectname__))
 
 
 @komandr.command
-@komandr.arg('cmd', 'cmd', choices=['add', 'remove', 'list'])
+@komandr.arg('cmd', 'cmd', choices=['add', 'remove', 'list'], help="Available server subcommands. Use <subcommand> -h to see more.")
 def server(cmd):
     _server.execute(sys.argv[2:])
 
