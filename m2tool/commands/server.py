@@ -81,7 +81,7 @@ def add(name=None, port=None, chroot=DEFAULT_CHROOT, bindaddr=DEFAULT_BIND_ADDR,
 
             session.add(server)
 
-    print 'Congratulations! Server [{0}] adding with success.'.format(name)
+    print 'Congratulations! Server [{0}] added successfully.'.format(name)
 
 
 @_server.command
