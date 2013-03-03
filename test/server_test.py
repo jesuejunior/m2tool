@@ -54,7 +54,7 @@ class ServerCommandTest(unittest.TestCase):
         server2_uuid = session.query(Server).filter_by(uuid='1234-abcd-5678-efgh').all()
         self.assertEquals(1, len(server2_uuid))
 
-    def test_remove_server(self):
+    def test_remove_one_server(self):
         remove_server_id = None
         with managed(Session) as session:
             add('teste-remove', 80, '/var/m2', uuid='1234-abcd-5678-efgh')
@@ -62,11 +62,24 @@ class ServerCommandTest(unittest.TestCase):
             self.assertIsNotNone(server_remove)
             remove_server_id = server_remove.id
 
-        remove(id=remove_server_id)
+        remove(id=[remove_server_id])
 
         with managed(Session) as session:
             server2_rem = session.query(Server).filter_by(uuid='1234-abcd-5678-efgh').all()
             self.assertEquals(0, len(server2_rem))
+
+    def test_remove_more_than_one_server(self):
+        add('server80', 80, '/var/m2', uuid='1234-abcd-5678-80')
+        add('server81', 81, '/var/m2', uuid='1234-abcd-5678-81')
+        add('server82', 82, '/var/m2', uuid='1234-abcd-5678-82')
+
+        remove(id=[1, 2])
+
+        with managed(Session) as session:
+            servers = session.query(Server).all()
+            self.assertEquals(1, len(servers))
+            self.assertEquals(3, servers[0].id)
+            self.assertEquals("1234-abcd-5678-82", servers[0].uuid)
 
     def test_remove_server_none(self):
         session = Session()

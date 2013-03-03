@@ -2,6 +2,7 @@
 from uuid import uuid4
 from alchemytools.context import managed
 from clint.textui import columns, puts
+from m2tool.conf import DEFAULT_CHROOT, DEFAULT_BIND_ADDR, DEFAULT_PIDFILE, DEFAULT_ACCESS_LOG_FILE, DEFAULT_ERROR_LOG_FILE, DEFAULT_SSL
 
 from m2tool.db import Session
 from m2tool import __projectname__
@@ -17,14 +18,6 @@ _server = komandr.prog(prog='{0} server'.format(__projectname__))
 @komandr.arg('cmd', 'cmd', choices=['add', 'remove', 'list'], help="Available server subcommands. Use <subcommand> -h to see more.")
 def server(cmd):
     _server.execute(sys.argv[2:])
-
-
-DEFAULT_CHROOT = "/var/mongrel2"
-DEFAULT_BIND_ADDR = "0.0.0.0"
-DEFAULT_PIDFILE = "/run/mongrel2.pid"
-DEFAULT_ACCESS_LOG_FILE = "/logs/access.log"
-DEFAULT_ERROR_LOG_FILE = "/logs/error.log"
-DEFAULT_SSL = False
 
 
 @_server.command
@@ -62,24 +55,26 @@ def add(name=None, port=None, chroot=DEFAULT_CHROOT, bindaddr=DEFAULT_BIND_ADDR,
             return False
         else:
             server = Server(name=name, port=port, chroot=chroot,  bind_addr=bindaddr, pid_File=pidfile,
-                default_host=defaulthost, access_log=accesslog, error_log=errorlog, use_ssl=ssl, uuid=uuid )
+                            default_host=defaulthost, access_log=accesslog, error_log=errorlog, use_ssl=ssl,
+                            uuid=uuid )
 
             session.add(server)
 
     print 'Congratulations! Server [{0}] adding with success.'.format(name)
 
 @_server.command
-@_server.arg('id', '--id', required=True, type=int, help="Id of the server to be removed")
+@_server.arg('id', '--id', required=True, type=int, nargs='+', help="Id(s) of the server(s) to be removed.")
 def remove(id):
     with managed(Session) as session:
-        server = session.query(Server).get(id)
-        if server:
-            server_name = server.name
-            session.query(Server).filter_by(id=id).delete()
-            session.commit()
-            print 'Server [{0}] was removed with success.'.format(server_name)
-        else:
-            print 'Server not found.'
+        for server_id in id:
+            server = session.query(Server).get(server_id)
+            if server:
+                server_name = server.name
+                session.query(Server).filter_by(id=server_id).delete()
+                session.commit()
+                print 'Server [{0}] was removed with success.'.format(server_name)
+            else:
+                print 'Server not found. id={0}'.format(server_id)
 
 @_server.command
 def list():
