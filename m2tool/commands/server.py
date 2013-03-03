@@ -10,26 +10,16 @@ from m2tool.db.server import Server
 import komandr
 
 
-
 _server = komandr.prog()
 
 
 @komandr.command
-@komandr.arg('cmd', 'cmd', choices=['add', 'remove', 'update', 'list'])
+@komandr.arg('cmd', 'cmd', choices=['add', 'remove', 'list'])
 def server(cmd):
-    print "Command received:", cmd
+    _server.execute(sys.argv[2:])
 
-    sys.argv = sys.argv[1:]
-    _server()
 
-#    subcommand, params = args.parse(arglist)
-#
-#    if subcommand in globals():
-#        globals()[subcommand](**params)
-#    else:
-#        print "Subcommand {0} not found".format(subcommand)
-
-@_server.command()
+@_server.command
 def add(name=None, port=None, chroot="/var/mongrel2", bindaddr="0.0.0.0", pidfile="/run/mongrel2.pid",
         defaulthost=None, accesslog='/logs/access.log', errorlog='/logs/error.log', ssl=False, uuid=None):
     print "Adding Server: name={0}, port={1}, ssl={2}".format(name, port, ssl)
@@ -59,7 +49,7 @@ def add(name=None, port=None, chroot="/var/mongrel2", bindaddr="0.0.0.0", pidfil
 
     print 'Congratulations! Server [{0}] adding with success.'.format(name)
 
-
+@_server.command
 def remove(id):
     with managed(Session) as session:
         server = session.query(Server).get(id)
@@ -70,13 +60,17 @@ def remove(id):
         else:
             print 'Server not found.'
 
+@_server.command
 def list():
+    """
+    Lis all registered mongrel2 servers
+    """
     with managed(Session) as session:
         servers = session.query(Server).all()
         if servers:
-            puts(columns(['Name', 32], ['Port', 5], ['Uuid', 35]))
+            puts(columns(["id", 10], ['Name', 32], ['Port', 5], ['Uuid', 10]))
         else:
             print "Servers not found"
         for server in servers:
-            puts(columns([server.name, 32], [str(server.port), 5], [server.uuid, 35]))
+            puts(columns([str(server.id), 10], [server.name, 32], [str(server.port), 5], [server.uuid, 40]))
 
