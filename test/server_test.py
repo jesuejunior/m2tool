@@ -1,5 +1,6 @@
 #encoding: utf-8
 import unittest
+from alchemytools.context import managed
 
 from m2tool.db import Metadata, Session
 from m2tool.db.server import Server
@@ -54,15 +55,18 @@ class ServerCommandTest(unittest.TestCase):
         self.assertEquals(1, len(server2_uuid))
 
     def test_remove_server(self):
-        session = Session()
-        add('teste-remove', 80, '/var/m2', uuid='1234-abcd-5678-efgh')
-        server_remove = session.query(Server).filter_by(uuid='1234-abcd-5678-efgh').all()
-        self.assertEquals(1, len(server_remove))
+        remove_server_id = None
+        with managed(Session) as session:
+            add('teste-remove', 80, '/var/m2', uuid='1234-abcd-5678-efgh')
+            server_remove = session.query(Server).filter_by(uuid='1234-abcd-5678-efgh').one()
+            self.assertIsNotNone(server_remove)
+            remove_server_id = server_remove.id
 
-        remove(id=server_remove[0].id)
+        remove(id=remove_server_id)
 
-        server2_rem = session.query(Server).filter_by(uuid='1234-abcd-5678-efgh').all()
-        self.assertEquals(0, len(server2_rem))
+        with managed(Session) as session:
+            server2_rem = session.query(Server).filter_by(uuid='1234-abcd-5678-efgh').all()
+            self.assertEquals(0, len(server2_rem))
 
     def test_remove_server_none(self):
         session = Session()

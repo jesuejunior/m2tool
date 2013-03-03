@@ -50,13 +50,15 @@ def add(name=None, port=None, chroot="/var/mongrel2", bindaddr="0.0.0.0", pidfil
     print 'Congratulations! Server [{0}] adding with success.'.format(name)
 
 @_server.command
+@_server.arg('id', '--id')
 def remove(id):
     with managed(Session) as session:
         server = session.query(Server).get(id)
         if server:
+            server_name = server.name
             session.query(Server).filter_by(id=id).delete()
             session.commit()
-            print 'Server [{0}] was removed with success.'.format(server.name)
+            print 'Server [{0}] was removed with success.'.format(server_name)
         else:
             print 'Server not found.'
 
