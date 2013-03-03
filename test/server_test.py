@@ -1,10 +1,12 @@
 #encoding: utf-8
 import unittest
 from alchemytools.context import managed
+from m2tool.conf import DEFAULT_BIND_ADDR
 
 from m2tool.db import Metadata, Session
 from m2tool.db.server import Server
-from m2tool.commands.server import add, remove
+from m2tool.commands.server import add, remove, update
+
 
 class ServerCommandTest(unittest.TestCase):
 
@@ -87,3 +89,83 @@ class ServerCommandTest(unittest.TestCase):
         remove(id=[200])
         server2_none = session.query(Server).all()
         self.assertEquals(len(server2_qtd), len(server2_none))
+
+    def test_update_server_validate_port(self):
+        with managed(Session) as session:
+            session.add(Server(id=1, port=90, name='server90'))
+            session.add(Server(id=2, port=91, name='server91'))
+
+        update(id=1, port=91)
+
+        with managed(Session) as session:
+            servers = session.query(Server).order_by(Server.id).all()
+            self.assertEquals(2, len(servers))
+            self.assertEquals(1, servers[0].id)
+            self.assertEquals(90, servers[0].port)
+            self.assertEquals(2, servers[1].id)
+            self.assertEquals(91, servers[1].port)
+
+    def test_update_server_validate_uuid(self):
+        with managed(Session) as session:
+            session.add(Server(id=1, port=90, name='server90', uuid='uuid-server90'))
+            session.add(Server(id=2, port=91, name='server91', uuid='uuid-server91'))
+
+        update(id=1, uuid='uuid-server91')
+
+        with managed(Session) as session:
+            servers = session.query(Server).order_by(Server.id).all()
+            self.assertEquals(2, len(servers))
+            self.assertEquals(1, servers[0].id)
+            self.assertEquals("uuid-server90", servers[0].uuid)
+            self.assertEquals(2, servers[1].id)
+            self.assertEquals("uuid-server91", servers[1].uuid)
+
+    def test_update_server_preserve_unused_fields(self):
+        with managed(Session) as session:
+            session.add(Server(id=1, port=90, name='server90', chroot="/var/m2",
+                               bind_addr="0.0.0.0", pid_File="/var/pid/server.pid", default_host="localhost",
+                               access_log="/var/log/access.log", error_log="/var/log/error.log", use_ssl=True))
+
+        update(id=1, port=80, name='server90', uuid='uuid-server90',
+               pidfile="/var/pid/server.pid", defaulthost="localhost",
+               accesslog="/var/m2/log/access.log", errorlog="/var/m2/log/error.log", ssl=True)
+
+        with managed(Session) as session:
+            server = session.query(Server).get(1)
+            self.assertEquals(1, server.id)
+            self.assertEquals(80, server.port)
+            self.assertEquals("server90", server.name)
+            self.assertEquals("uuid-server90", server.uuid)
+            self.assertEquals("/var/m2", server.chroot)
+            self.assertEquals("0.0.0.0", server.bind_addr)
+            self.assertEquals("/var/pid/server.pid", server.pid_File)
+            self.assertEquals("localhost", server.default_host)
+            self.assertEquals("/var/m2/log/access.log", server.access_log)
+            self.assertEquals("/var/m2/log/error.log", server.error_log)
+            self.assertEquals(True, server.use_ssl)
+
+    def test_update_server_set_ssl_to_false(self):
+        with managed(Session) as session:
+            session.add(Server(id=1, port=90, name='server90', uuid='uuid-server90', chroot="/var/m2",
+                               bind_addr="0.0.0.0", pid_File="/var/pid/server.pid", default_host="localhost",
+                               access_log="/var/log/access.log", error_log="/var/log/error.log", use_ssl=True))
+
+        update(id=1, ssl=False)
+
+        with managed(Session) as session:
+            server = session.query(Server).get(1)
+            self.assertEquals(1, server.id)
+            self.assertEquals(False, server.use_ssl)
+
+    def test_update_server_change_all_fields(self):
+        with managed(Session) as session:
+            session.add(Server(id=1, port=90, name='server90', uuid='uuid-server90',  use_ssl=False))
+
+        update(id=1, port=80)
+
+        with managed(Session) as session:
+            servers = session.query(Server).order_by(Server.id).all()
+            self.assertEquals(1, len(servers))
+            self.assertEquals(1, servers[0].id)
+            self.assertEquals(80, servers[0].port)
+            self.assertEquals(False, servers[0].use_ssl)

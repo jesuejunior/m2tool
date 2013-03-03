@@ -84,6 +84,11 @@ def add(name=None, port=None, chroot=DEFAULT_CHROOT, bindaddr=DEFAULT_BIND_ADDR,
     print 'Congratulations! Server [{0}] added successfully.'.format(name)
 
 
+def _new_value_for_field(value, default):
+    if value is not None:
+        return value
+    return default
+
 @_server.command
 @_server.arg("id", "--id", required=True, type=int)
 @_server.arg('name', type=str, help=NAME_ARG_HELP)
@@ -96,9 +101,36 @@ def add(name=None, port=None, chroot=DEFAULT_CHROOT, bindaddr=DEFAULT_BIND_ADDR,
 @_server.arg('errorlog',type=str, help=ERROR_LOG_ARG_HELP)
 @_server.arg('ssl', type=bool, default=False, const=True, nargs='?', help=SSL_ARG_HELP)
 @_server.arg('uuid', type=str, help=UUID_ARG_HELP)
-def update(id, name=None, port=None, chroot=DEFAULT_CHROOT, bindaddr=DEFAULT_BIND_ADDR, pidfile=DEFAULT_PIDFILE,
-           defaulthost=None, accesslog=DEFAULT_ACCESS_LOG_FILE, errorlog=DEFAULT_ERROR_LOG_FILE, ssl=DEFAULT_SSL,
-           uuid=None):
+def update(id, name=None, port=None, chroot=None, bindaddr=None, pidfile=None,
+           defaulthost=None, accesslog=None, errorlog=None, ssl=None, uuid=None):
+
+    with managed(Session) as session:
+        server = session.query(Server).get(id)
+        if not server:
+            print "Server not found! id={0}".format(id)
+            return False
+
+        port_verify = session.query(Server).filter_by(port=port).all()
+        if port_verify:
+            print 'You cannot have two servers on the same port. Server id={id} already uses port {port}'.format(id=port_verify[0].id, port=port)
+            return False
+
+        uuid_verify = session.query(Server).filter_by(uuid=uuid).all()
+        if uuid_verify:
+            print 'You cannot have two servers with the same uuid. Server id={id} already uses uuid {uuid}'.format(id=uuid_verify[0].id, uuid=uuid)
+            return False
+
+        server.uuid = _new_value_for_field(uuid, server.uuid)
+        server.port = _new_value_for_field(port, server.port)
+        server.name = _new_value_for_field(name, server.name)
+        server.chroot = _new_value_for_field(chroot, server.chroot)
+        server.bind_addr = _new_value_for_field(bindaddr, server.bind_addr)
+        server.pid_File = _new_value_for_field(pidfile, server.pid_File)
+        server.default_host = _new_value_for_field(defaulthost, server.default_host)
+        server.access_log = _new_value_for_field(accesslog, server.access_log)
+        server.error_log = _new_value_for_field(errorlog, server.error_log)
+        server.use_ssl = _new_value_for_field(ssl, server.use_ssl)
+
     return "update"
 
 @_server.command
