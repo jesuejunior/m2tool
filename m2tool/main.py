@@ -12,13 +12,3 @@ def main():
     print "Using DB {0}".format(os.environ.get(M2_DB_ENV))
 
     komandr.main.execute(sys.argv[1:3])
-
-
-#    if command not in all_commands:
-#        print "Command {0} not found!".format(command)
-#
-#    else:
-#        f = args.function_for(m2tool.commands, command)
-#        f(sys.argv[2:])
-#
-#    sys.exit(0)
