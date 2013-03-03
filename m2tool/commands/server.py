@@ -10,27 +10,48 @@ import sys
 from m2tool.db.server import Server
 import komandr
 
+UUID_ARG_HELP = "Sets the server's unique UUID. This is what is used by mongrel2 when starting/stopping the server. Default: Auto generated"
+
+SSL_ARG_HELP = "Choose if this server will use SSL or not. Default: {0}".format(DEFAULT_SSL)
+
+ERROR_LOG_ARG_HELP = "Where the server will create the error logs. This is relative to the chroot. Default: {0}".format(
+    DEFAULT_ERROR_LOG_FILE)
+
+ACCESS_LOG_ARG_HELP = "Where the server will create the access logs. This is relative to the chroot. Default: {0}".format(
+    DEFAULT_ACCESS_LOG_FILE)
+
+DEFAULT_HOST_ARG_HELP = "The *name* of the host this server will deliver the request if it does no match any other hosts."
+
+PIDFILE_ARG_HELP = "Where the server will create the pidfile. This is relative to chroot. Default: {0}".format(DEFAULT_PIDFILE)
+
+BINDADDR_ARG_HELP = "Which address your server will use. Default: {0}".format(DEFAULT_BIND_ADDR)
+
+CHROOT_ARG_HELP = "Where your server will chroot before accepting connections. Default: {0}".format(DEFAULT_CHROOT)
+
+PORT_ARG_HELP = "Port on which your server will listen to connections."
+
+NAME_ARG_HELP = "The name of your server. This is just an internal name, choose what you like more."
 
 _server = komandr.prog(prog='{0} server'.format(__projectname__))
 
 
 @komandr.command
-@komandr.arg('cmd', 'cmd', choices=['add', 'remove', 'list'], help="Available server subcommands. Use <subcommand> -h to see more.")
+@komandr.arg('cmd', 'cmd', choices=['add', 'remove', 'list', 'update'], help="Available server subcommands. Use <subcommand> -h to see more.")
 def server(cmd):
     _server.execute(sys.argv[2:])
 
 
 @_server.command
-@_server.arg('name', required=True, type=str, help="The name of your server. This is just an internal name, choose what you like more.")
-@_server.arg('port', required=True, type=int, help="Port on which your server will listen to connections.")
-@_server.arg('chroot', required=False, type=str, help="Where your server will chroot before accepting connections. Default: {0}".format(DEFAULT_CHROOT))
-@_server.arg('bindaddr', required=False, type=str, help="Which address your server will use. Default: {0}".format(DEFAULT_BIND_ADDR))
-@_server.arg('pidfile', required=False, type=str, help="Where the server will create the pidfile. This is relative to chroot. Default: {0}".format(DEFAULT_PIDFILE))
-@_server.arg('defaulthost', required=False, type=str, help="The *name* of the host this server will deliver the request if it does no match any other hosts.")
-@_server.arg('accesslog', required=False, type=str, help="Where the server will create the access logs. This is relative to the chroot. Default: {0}".format(DEFAULT_ACCESS_LOG_FILE))
-@_server.arg('errorlog', required=False, type=str, help="Where the server will create the error logs. This is relative to the chroot. Default: {0}".format(DEFAULT_ERROR_LOG_FILE))
-@_server.arg('ssl', required=False, type=bool, default=False, const=True, nargs='?', help="Choose if this server will use SSL or not. Default: {0}".format(DEFAULT_SSL))
-@_server.arg('uuid', required=False, type=str, help="Sets the server's unique UUID. This is what is used by mongrel2 when starting/stopping the server. Default: Auto generated")
+@_server.arg('name', required=True, type=str, help=NAME_ARG_HELP)
+@_server.arg('port', required=True, type=int, help=PORT_ARG_HELP)
+@_server.arg('chroot', required=False, type=str, help=CHROOT_ARG_HELP)
+@_server.arg('bindaddr', required=False, type=str, help=BINDADDR_ARG_HELP)
+@_server.arg('pidfile', required=False, type=str, help=PIDFILE_ARG_HELP)
+@_server.arg('defaulthost', required=False, type=str, help=DEFAULT_HOST_ARG_HELP)
+@_server.arg('accesslog', required=False, type=str, help=ACCESS_LOG_ARG_HELP)
+@_server.arg('errorlog', required=False, type=str, help=ERROR_LOG_ARG_HELP)
+@_server.arg('ssl', required=False, type=bool, default=False, const=True, nargs='?', help=SSL_ARG_HELP)
+@_server.arg('uuid', required=False, type=str, help=UUID_ARG_HELP)
 def add(name=None, port=None, chroot=DEFAULT_CHROOT, bindaddr=DEFAULT_BIND_ADDR, pidfile=DEFAULT_PIDFILE,
         defaulthost=None, accesslog=DEFAULT_ACCESS_LOG_FILE, errorlog=DEFAULT_ERROR_LOG_FILE, ssl=DEFAULT_SSL,
         uuid=None):
@@ -56,11 +77,29 @@ def add(name=None, port=None, chroot=DEFAULT_CHROOT, bindaddr=DEFAULT_BIND_ADDR,
         else:
             server = Server(name=name, port=port, chroot=chroot,  bind_addr=bindaddr, pid_File=pidfile,
                             default_host=defaulthost, access_log=accesslog, error_log=errorlog, use_ssl=ssl,
-                            uuid=uuid )
+                            uuid=uuid)
 
             session.add(server)
 
     print 'Congratulations! Server [{0}] adding with success.'.format(name)
+
+
+@_server.command
+@_server.arg("id", "--id", required=True, type=int)
+@_server.arg('name', type=str, help=NAME_ARG_HELP)
+@_server.arg('port', type=int, help=PORT_ARG_HELP)
+@_server.arg('chroot', type=str, help=CHROOT_ARG_HELP)
+@_server.arg('bindaddr', type=str, help=BINDADDR_ARG_HELP)
+@_server.arg('pidfile', type=str, help=PIDFILE_ARG_HELP)
+@_server.arg('defaulthost',type=str, help=DEFAULT_HOST_ARG_HELP)
+@_server.arg('accesslog',type=str, help=ACCESS_LOG_ARG_HELP)
+@_server.arg('errorlog',type=str, help=ERROR_LOG_ARG_HELP)
+@_server.arg('ssl', type=bool, default=False, const=True, nargs='?', help=SSL_ARG_HELP)
+@_server.arg('uuid', type=str, help=UUID_ARG_HELP)
+def update(id, name=None, port=None, chroot=DEFAULT_CHROOT, bindaddr=DEFAULT_BIND_ADDR, pidfile=DEFAULT_PIDFILE,
+           defaulthost=None, accesslog=DEFAULT_ACCESS_LOG_FILE, errorlog=DEFAULT_ERROR_LOG_FILE, ssl=DEFAULT_SSL,
+           uuid=None):
+    return "update"
 
 @_server.command
 @_server.arg('id', '--id', required=True, type=int, nargs='+', help="Id(s) of the server(s) to be removed.")
