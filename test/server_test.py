@@ -84,11 +84,6 @@ class ServerCommandTest(unittest.TestCase):
     def test_remove_server_none(self):
         session = Session()
         server2_qtd = session.query(Server).all()
-        remove(id=200)
+        remove(id=[200])
         server2_none = session.query(Server).all()
         self.assertEquals(len(server2_qtd), len(server2_none))
-
-
-    def tearDown(self):
-        Metadata.drop_all()
-        Metadata.create_all()
