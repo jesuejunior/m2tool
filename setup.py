@@ -22,7 +22,7 @@ setup(
             'm2tool = m2tool.main:main',
             ]
     },
-  install_requires = ['python-modargs'],
+  install_requires = ['komandr==0.1.1'],
   classifiers = [
     "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
