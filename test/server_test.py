@@ -69,9 +69,10 @@ class ServerCommandTest(unittest.TestCase):
             self.assertEquals(0, len(server2_rem))
 
     def test_remove_more_than_one_server(self):
-        add('server80', 80, '/var/m2', uuid='1234-abcd-5678-80')
-        add('server81', 81, '/var/m2', uuid='1234-abcd-5678-81')
-        add('server82', 82, '/var/m2', uuid='1234-abcd-5678-82')
+        with managed(Session) as session:
+            session.add(Server(id=1, name='server80', port=80))
+            session.add(Server(id=2, name='server81', port=81))
+            session.add(Server(id=3, name='server82', port=82))
 
         remove(id=[1, 2])
 
@@ -79,7 +80,6 @@ class ServerCommandTest(unittest.TestCase):
             servers = session.query(Server).all()
             self.assertEquals(1, len(servers))
             self.assertEquals(3, servers[0].id)
-            self.assertEquals("1234-abcd-5678-82", servers[0].uuid)
 
     def test_remove_server_none(self):
         session = Session()
